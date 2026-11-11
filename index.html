@@ -9,24 +9,31 @@
   body { background: #02050a; color: #00f0ff; font-family: 'Share Tech Mono', monospace; overflow: hidden; height: 100vh; }
   .scanline { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(transparent 50%, rgba(0, 240, 255, 0.03) 50%); background-size: 100% 4px; pointer-events: none; z-index: 1000; animation: scan 8s linear infinite; }
   @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
-  header { text-align: center; padding: 20px; border-bottom: 2px solid #00f0ff; background: rgba(0, 20, 40, 0.8); box-shadow: 0 0 30px #00f0ff; }
-  h1 { font-family: 'Orbitron', sans-serif; font-size: 2.5em; letter-spacing: 8px; text-shadow: 0 0 20px #00f0ff; }
-  .subtitle { color: #ff00aa; font-size: 0.9em; margin-top: 5px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; padding: 30px; max-height: calc(100vh - 140px); overflow-y: auto; }
-  .bot-card { background: rgba(0, 30, 50, 0.7); border: 1px solid #00f0ff; border-radius: 12px; padding: 15px; position: relative; overflow: hidden; transition: all 0.3s; box-shadow: 0 0 15px rgba(0, 240, 255, 0.3); }
-  .bot-card:hover { transform: translateY(-5px); box-shadow: 0 0 30px #00f0ff; }
+  header { text-align: center; padding: 15px; border-bottom: 2px solid #00f0ff; background: rgba(0, 20, 40, 0.8); box-shadow: 0 0 30px #00f0ff; }
+  h1 { font-family: 'Orbitron', sans-serif; font-size: 2.2em; letter-spacing: 6px; text-shadow: 0 0 20px #00f0ff; }
+  .subtitle { color: #ff00aa; font-size: 0.85em; margin-top: 4px; }
+  .main { display: flex; height: calc(100vh - 110px); }
+  .grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; padding: 20px; overflow-y: auto; }
+  .log-panel { width: 380px; border-left: 2px solid #00f0ff; background: rgba(0, 15, 30, 0.9); display: flex; flex-direction: column; }
+  .log-header { padding: 12px; border-bottom: 1px solid #00f0ff; font-family: 'Orbitron', sans-serif; font-size: 0.9em; text-align: center; }
+  .log-content { flex: 1; overflow-y: auto; padding: 12px; font-size: 0.78em; line-height: 1.4; }
+  .log-entry { margin-bottom: 8px; opacity: 0.85; }
+  .log-entry .time { color: #ffaa00; }
+  .log-entry .bot { color: #00ff88; font-weight: bold; }
+  .bot-card { background: rgba(0, 30, 50, 0.7); border: 1px solid #00f0ff; border-radius: 12px; padding: 14px; position: relative; overflow: hidden; transition: all 0.3s; box-shadow: 0 0 12px rgba(0, 240, 255, 0.25); }
+  .bot-card:hover { transform: translateY(-4px); box-shadow: 0 0 25px #00f0ff; }
   .bot-card.active { border-color: #00ff88; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%, 100% { box-shadow: 0 0 15px #00ff88; } 50% { box-shadow: 0 0 40px #00ff88; } }
-  .bot-name { font-family: 'Orbitron', sans-serif; font-size: 1.2em; margin-bottom: 8px; }
-  .status { font-size: 0.8em; padding: 3px 8px; border-radius: 4px; display: inline-block; }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 0 12px #00ff88; } 50% { box-shadow: 0 0 35px #00ff88; } }
+  .bot-name { font-family: 'Orbitron', sans-serif; font-size: 1.1em; margin-bottom: 6px; }
+  .status { font-size: 0.75em; padding: 2px 7px; border-radius: 4px; display: inline-block; }
   .status.running { background: #00ff88; color: #000; }
   .status.idle { background: #444; color: #aaa; }
-  .xp-bar { height: 8px; background: #111; border-radius: 4px; margin: 10px 0; overflow: hidden; }
-  .xp-fill { height: 100%; background: linear-gradient(90deg, #00f0ff, #ff00aa); width: 0%; transition: width 1s; }
-  .level { color: #ffaa00; font-size: 0.85em; }
-  .footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 10px; background: rgba(0,0,0,0.8); font-size: 0.75em; color: #555; }
-  button { background: transparent; border: 1px solid #00f0ff; color: #00f0ff; padding: 10px 20px; margin: 10px; font-family: 'Orbitron', sans-serif; cursor: pointer; transition: all 0.2s; }
-  button:hover { background: #00f0ff; color: #000; box-shadow: 0 0 20px #00f0ff; }
+  .xp-bar { height: 7px; background: #111; border-radius: 4px; margin: 8px 0; overflow: hidden; }
+  .xp-fill { height: 100%; background: linear-gradient(90deg, #00f0ff, #ff00aa); transition: width 1s; }
+  .level { color: #ffaa00; font-size: 0.8em; }
+  .footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 8px; background: rgba(0,0,0,0.85); font-size: 0.7em; color: #555; }
+  button { background: transparent; border: 1px solid #00f0ff; color: #00f0ff; padding: 8px 16px; margin: 6px; font-family: 'Orbitron', sans-serif; cursor: pointer; transition: all 0.2s; font-size: 0.8em; }
+  button:hover { background: #00f0ff; color: #000; box-shadow: 0 0 15px #00f0ff; }
 </style>
 </head>
 <body>
@@ -36,8 +43,15 @@
   <div class="subtitle">MULTI-AGENT COMMAND CENTER // PAPER MODE ACTIVE</div>
   <button onclick="playBeep()">ACTIVATE SOUND</button>
   <button onclick="randomize()">SIMULATE ACTIVITY</button>
+  <button onclick="document.getElementById('log').scrollTop = document.getElementById('log').scrollHeight">SCROLL TO BOTTOM</button>
 </header>
-<div class="grid" id="grid"></div>
+<div class="main">
+  <div class="grid" id="grid"></div>
+  <div class="log-panel">
+    <div class="log-header">LIVE ACTIVITY LOG</div>
+    <div class="log-content" id="log"></div>
+  </div>
+</div>
 <div class="footer">REAL-TIME STATUS // GAMIFIED // SCI-FI INTERFACE // NO REAL CAPITAL AT RISK</div>
 <script>
 const bots = [
@@ -51,6 +65,35 @@ const bots = [
   {name: "Afterglow", role: "Post-Trade", status: "idle", level: 8, xp: 70},
   {name: "Vector", role: "Execution", status: "idle", level: 3, xp: 10}
 ];
+
+const logEl = document.getElementById('log');
+const actions = [
+  "scanning DexScreener for new Solana pairs",
+  "applied hard filters and rug checks",
+  "monitoring X for high-impact news",
+  "calculating technical score (RSI/MACD/EMAs)",
+  "building structured thesis",
+  "enforcing position size and stop rules",
+  "running final consensus check",
+  "reviewing closed paper trade",
+  "preparing Jupiter quote (paper mode)",
+  "wrote latest verdict to shared status file",
+  "rejected candidate — concentration too high",
+  "flagged adverse news overlay",
+  "cooldown active after previous stop"
+];
+
+function addLog(botName, action) {
+  const now = new Date();
+  const time = now.toLocaleTimeString('en-GB', {hour12: false});
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  entry.innerHTML = `<span class="time">[${time}]</span> <span class="bot">${botName}</span> → ${action}`;
+  logEl.appendChild(entry);
+  if (logEl.children.length > 80) logEl.removeChild(logEl.firstChild);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
 function render() {
   const grid = document.getElementById('grid');
   grid.innerHTML = bots.map(b => `
@@ -64,6 +107,7 @@ function render() {
     </div>
   `).join('');
 }
+
 function playBeep() {
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
   const osc = ctx.createOscillator();
@@ -76,16 +120,27 @@ function playBeep() {
   gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
   osc.start(); osc.stop(ctx.currentTime + 0.3);
 }
+
 function randomize() {
   bots.forEach(b => {
-    if (Math.random() > 0.6) b.status = b.status === 'running' ? 'idle' : 'running';
-    b.xp = Math.min(100, b.xp + Math.floor(Math.random() * 15));
+    if (Math.random() > 0.65) {
+      b.status = b.status === 'running' ? 'idle' : 'running';
+      const action = actions[Math.floor(Math.random() * actions.length)];
+      addLog(b.name, action);
+    }
+    b.xp = Math.min(100, b.xp + Math.floor(Math.random() * 12));
     if (b.xp >= 100) { b.level++; b.xp = 0; playBeep(); }
   });
   render();
 }
+
+// Initial logs
+addLog("System", "AetherDesk online — paper mode active");
+addLog("Pulse Scout", "scanning for new Solana candidates");
+addLog("Forge Filter", "shared status file ready");
+
 render();
-setInterval(randomize, 4000);
+setInterval(randomize, 3500);
 </script>
 </body>
 </html>
