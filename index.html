@@ -66,7 +66,7 @@
   <div class="right-panel">
     <div class="pnl-header">PAPER TRADING DESK</div>
     <div class="pnl-stats">
-      <div>Starting Stack: <span class="value">$10,000</span></div>
+      <div>Starting Stack: <span class="value" id="start">$10,000</span></div>
       <div>Current Equity: <span class="value" id="equity">$10,000</span></div>
       <div>Progress: <span class="delta" id="delta">$0</span></div>
     </div>
@@ -82,7 +82,7 @@
     <div class="log-content" id="log"></div>
   </div>
 </div>
-<div class="footer">REAL-TIME STATUS // GAMIFIED // SCI-FI INTERFACE // NO REAL CAPITAL AT RISK</div>
+<div class="footer">REAL-TIME STATUS // GAMIFIED // SCI-FI INTERFACE // NO REAL CAPITAL AT RISK // LIVE PAPER DATA</div>
 <script>
 let audioCtx;
 function enableAudio() {
@@ -103,43 +103,47 @@ const bots = [
   {name: "Vector", role: "Execution", status: "idle", level: 3, xp: 10, freq: 980, type: 'square', dur: 0.1}
 ];
 
+const TRADES_URL = 'https://raw.githubusercontent.com/icecoldsteve/aetherdesk-dashboard/main/paper_trades.json';
 let startingStack = 10000;
 let currentEquity = 10000;
-const wins = [];
-const losses = [];
-const sampleTokens = ["WIF", "BONK", "POPCAT", "MEW", "BOME", "SLERF", "MYRO", "PNUT"];
+let trades = [];
 
 function updatePnL() {
+  document.getElementById('start').textContent = '$' + startingStack.toLocaleString();
   document.getElementById('equity').textContent = '$' + currentEquity.toLocaleString();
   const delta = currentEquity - startingStack;
   const deltaEl = document.getElementById('delta');
   deltaEl.textContent = (delta >= 0 ? '+' : '') + '$' + delta.toLocaleString();
   deltaEl.className = 'delta ' + (delta >= 0 ? 'up' : 'down');
 
-  document.getElementById('wins').innerHTML = wins.slice(-8).reverse().map(t =>
-    `<div class="trade win">${t.token} +$${t.pnl.toLocaleString()}</div>`
+  const wins = trades.filter(t => t.pnl > 0);
+  const losses = trades.filter(t => t.pnl < 0);
+
+  document.getElementById('wins').innerHTML = wins.slice(-10).reverse().map(t =>
+    `<div class="trade win">${t.token || 'UNKNOWN'} +$${Math.round(t.pnl).toLocaleString()}</div>`
   ).join('') || '<div style="opacity:0.5">No wins yet</div>';
 
-  document.getElementById('losses').innerHTML = losses.slice(-8).reverse().map(t =>
-    `<div class="trade loss">${t.token} -$${Math.abs(t.pnl).toLocaleString()}</div>`
+  document.getElementById('losses').innerHTML = losses.slice(-10).reverse().map(t =>
+    `<div class="trade loss">${t.token || 'UNKNOWN'} -$${Math.abs(Math.round(t.pnl)).toLocaleString()}</div>`
   ).join('') || '<div style="opacity:0.5">No losses yet</div>';
 }
 
-function addTrade() {
-  if (Math.random() > 0.4) {
-    const pnl = Math.floor(Math.random() * 450) + 50;
-    const token = sampleTokens[Math.floor(Math.random() * sampleTokens.length)];
-    wins.push({token, pnl});
-    currentEquity += pnl;
-    addLog("Gatekeeper", `closed winning paper trade ${token} +$${pnl}`);
-  } else {
-    const pnl = -(Math.floor(Math.random() * 280) + 40);
-    const token = sampleTokens[Math.floor(Math.random() * sampleTokens.length)];
-    losses.push({token, pnl});
-    currentEquity += pnl;
-    addLog("Gatekeeper", `closed losing paper trade ${token} $${pnl}`);
+async function loadTrades() {
+  try {
+    const res = await fetch(TRADES_URL + '?t=' + Date.now());
+    if (!res.ok) throw new Error('fetch failed');
+    const data = await res.json();
+    startingStack = data.startingStack || 10000;
+    trades = Array.isArray(data.trades) ? data.trades : [];
+    currentEquity = trades.reduce((sum, t) => sum + (Number(t.pnl) || 0), startingStack);
+    updatePnL();
+    if (trades.length > 0) {
+      addLog("System", `loaded ${trades.length} real paper trades — equity $${currentEquity.toLocaleString()}`);
+    }
+  } catch (e) {
+    console.warn('Could not load real trades:', e);
+    addLog("System", "waiting for real paper trades data…");
   }
-  updatePnL();
 }
 
 function playBotSound(index) {
@@ -200,27 +204,28 @@ function render() {
   `).join('');
 }
 
-function randomize() {
+function randomizeStatus() {
   bots.forEach((b, i) => {
-    if (Math.random() > 0.65) {
+    if (Math.random() > 0.75) {
       b.status = b.status === 'running' ? 'idle' : 'running';
       const action = actions[Math.floor(Math.random() * actions.length)];
       addLog(b.name, action);
-      playBotSound(i);
+      if (Math.random() > 0.5) playBotSound(i);
     }
-    b.xp = Math.min(100, b.xp + Math.floor(Math.random() * 12));
+    b.xp = Math.min(100, b.xp + Math.floor(Math.random() * 8));
     if (b.xp >= 100) { b.level++; b.xp = 0; }
   });
-  if (Math.random() > 0.7) addTrade();
   render();
 }
 
-addLog("System", "AetherDesk online — paper mode active — $10,000 virtual stack");
+addLog("System", "AetherDesk online — paper mode active — $10,000 virtual stack — LIVE DATA");
 addLog("Pulse Scout", "scanning for new Solana candidates");
 addLog("Forge Filter", "shared status file ready");
 updatePnL();
 render();
-setInterval(randomize, 3500);
+loadTrades();
+setInterval(loadTrades, 8000);
+setInterval(randomizeStatus, 4500);
 </script>
 </body>
 </html>
