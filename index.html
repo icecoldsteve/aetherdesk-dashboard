@@ -16,7 +16,18 @@
   .subtitle { color: #ff00aa; font-size: 0.75em; margin-top: 2px; }
   .main { display: flex; height: calc(100vh - 110px); position: relative; z-index: 5; }
   .grid { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 8px; padding: 10px 10px 40px 10px; align-content: start; justify-content: center; }
-  .log-panel { width: 320px; border-left: 2px solid #00f0ff; background: rgba(0, 12, 25, 0.94); display: flex; flex-direction: column; }
+  .right-panel { width: 340px; border-left: 2px solid #00f0ff; background: rgba(0, 12, 25, 0.94); display: flex; flex-direction: column; }
+  .pnl-header { padding: 8px; border-bottom: 1px solid #00f0ff; font-family: 'Orbitron', sans-serif; font-size: 0.85em; text-align: center; }
+  .pnl-stats { padding: 10px; font-size: 0.8em; border-bottom: 1px solid #00f0ff; }
+  .pnl-stats .value { font-size: 1.3em; color: #00ff88; }
+  .pnl-stats .delta.up { color: #00ff88; }
+  .pnl-stats .delta.down { color: #ff4466; }
+  .trades-section { flex: 1; overflow-y: auto; padding: 8px; font-size: 0.7em; }
+  .trades-section h4 { margin: 8px 0 4px; color: #ffaa00; }
+  .trade { margin-bottom: 4px; padding: 3px 0; border-bottom: 1px solid rgba(0,240,255,0.15); }
+  .trade.win { color: #00ff88; }
+  .trade.loss { color: #ff4466; }
+  .log-panel { width: 300px; border-left: 2px solid #00f0ff; background: rgba(0, 12, 25, 0.94); display: flex; flex-direction: column; }
   .log-header { padding: 8px; border-bottom: 1px solid #00f0ff; font-family: 'Orbitron', sans-serif; font-size: 0.8em; text-align: center; }
   .log-content { flex: 1; overflow-y: auto; padding: 8px; font-size: 0.7em; line-height: 1.4; }
   .log-entry { margin-bottom: 6px; opacity: 0.9; }
@@ -52,6 +63,20 @@
 </header>
 <div class="main">
   <div class="grid" id="grid"></div>
+  <div class="right-panel">
+    <div class="pnl-header">PAPER TRADING DESK</div>
+    <div class="pnl-stats">
+      <div>Starting Stack: <span class="value">$10,000</span></div>
+      <div>Current Equity: <span class="value" id="equity">$10,000</span></div>
+      <div>Progress: <span class="delta" id="delta">$0</span></div>
+    </div>
+    <div class="trades-section">
+      <h4>WINNING TRADES</h4>
+      <div id="wins"></div>
+      <h4>LOSING TRADES</h4>
+      <div id="losses"></div>
+    </div>
+  </div>
   <div class="log-panel">
     <div class="log-header">LIVE ACTIVITY LOG</div>
     <div class="log-content" id="log"></div>
@@ -77,6 +102,45 @@ const bots = [
   {name: "Afterglow", role: "Post-Trade", status: "idle", level: 8, xp: 70, freq: 740, type: 'triangle', dur: 0.2},
   {name: "Vector", role: "Execution", status: "idle", level: 3, xp: 10, freq: 980, type: 'square', dur: 0.1}
 ];
+
+let startingStack = 10000;
+let currentEquity = 10000;
+const wins = [];
+const losses = [];
+const sampleTokens = ["WIF", "BONK", "POPCAT", "MEW", "BOME", "SLERF", "MYRO", "PNUT"];
+
+function updatePnL() {
+  document.getElementById('equity').textContent = '$' + currentEquity.toLocaleString();
+  const delta = currentEquity - startingStack;
+  const deltaEl = document.getElementById('delta');
+  deltaEl.textContent = (delta >= 0 ? '+' : '') + '$' + delta.toLocaleString();
+  deltaEl.className = 'delta ' + (delta >= 0 ? 'up' : 'down');
+
+  document.getElementById('wins').innerHTML = wins.slice(-8).reverse().map(t =>
+    `<div class="trade win">${t.token} +$${t.pnl.toLocaleString()}</div>`
+  ).join('') || '<div style="opacity:0.5">No wins yet</div>';
+
+  document.getElementById('losses').innerHTML = losses.slice(-8).reverse().map(t =>
+    `<div class="trade loss">${t.token} -$${Math.abs(t.pnl).toLocaleString()}</div>`
+  ).join('') || '<div style="opacity:0.5">No losses yet</div>';
+}
+
+function addTrade() {
+  if (Math.random() > 0.4) {
+    const pnl = Math.floor(Math.random() * 450) + 50;
+    const token = sampleTokens[Math.floor(Math.random() * sampleTokens.length)];
+    wins.push({token, pnl});
+    currentEquity += pnl;
+    addLog("Gatekeeper", `closed winning paper trade ${token} +$${pnl}`);
+  } else {
+    const pnl = -(Math.floor(Math.random() * 280) + 40);
+    const token = sampleTokens[Math.floor(Math.random() * sampleTokens.length)];
+    losses.push({token, pnl});
+    currentEquity += pnl;
+    addLog("Gatekeeper", `closed losing paper trade ${token} $${pnl}`);
+  }
+  updatePnL();
+}
 
 function playBotSound(index) {
   if (!audioCtx) return;
@@ -147,13 +211,14 @@ function randomize() {
     b.xp = Math.min(100, b.xp + Math.floor(Math.random() * 12));
     if (b.xp >= 100) { b.level++; b.xp = 0; }
   });
+  if (Math.random() > 0.7) addTrade();
   render();
 }
 
-addLog("System", "AetherDesk online — paper mode active");
+addLog("System", "AetherDesk online — paper mode active — $10,000 virtual stack");
 addLog("Pulse Scout", "scanning for new Solana candidates");
 addLog("Forge Filter", "shared status file ready");
-
+updatePnL();
 render();
 setInterval(randomize, 3500);
 </script>
