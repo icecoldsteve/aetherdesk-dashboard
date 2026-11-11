@@ -9,31 +9,31 @@
   body { background: #02050a; color: #00f0ff; font-family: 'Share Tech Mono', monospace; overflow: hidden; height: 100vh; }
   .scanline { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(transparent 50%, rgba(0, 240, 255, 0.03) 50%); background-size: 100% 4px; pointer-events: none; z-index: 1000; animation: scan 8s linear infinite; }
   @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
-  header { text-align: center; padding: 15px; border-bottom: 2px solid #00f0ff; background: rgba(0, 20, 40, 0.8); box-shadow: 0 0 30px #00f0ff; }
-  h1 { font-family: 'Orbitron', sans-serif; font-size: 2.2em; letter-spacing: 6px; text-shadow: 0 0 20px #00f0ff; }
-  .subtitle { color: #ff00aa; font-size: 0.85em; margin-top: 4px; }
-  .main { display: flex; height: calc(100vh - 110px); }
-  .grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; padding: 20px; overflow-y: auto; }
-  .log-panel { width: 380px; border-left: 2px solid #00f0ff; background: rgba(0, 15, 30, 0.9); display: flex; flex-direction: column; }
-  .log-header { padding: 12px; border-bottom: 1px solid #00f0ff; font-family: 'Orbitron', sans-serif; font-size: 0.9em; text-align: center; }
-  .log-content { flex: 1; overflow-y: auto; padding: 12px; font-size: 0.78em; line-height: 1.4; }
-  .log-entry { margin-bottom: 8px; opacity: 0.85; }
+  header { text-align: center; padding: 12px; border-bottom: 2px solid #00f0ff; background: rgba(0, 20, 40, 0.8); box-shadow: 0 0 30px #00f0ff; }
+  h1 { font-family: 'Orbitron', sans-serif; font-size: 2em; letter-spacing: 5px; text-shadow: 0 0 20px #00f0ff; }
+  .subtitle { color: #ff00aa; font-size: 0.8em; margin-top: 3px; }
+  .main { display: flex; height: calc(100vh - 100px); }
+  .grid { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 14px; padding: 16px; }
+  .log-panel { width: 360px; border-left: 2px solid #00f0ff; background: rgba(0, 15, 30, 0.92); display: flex; flex-direction: column; }
+  .log-header { padding: 10px; border-bottom: 1px solid #00f0ff; font-family: 'Orbitron', sans-serif; font-size: 0.85em; text-align: center; }
+  .log-content { flex: 1; overflow-y: auto; padding: 10px; font-size: 0.75em; line-height: 1.45; }
+  .log-entry { margin-bottom: 7px; opacity: 0.9; }
   .log-entry .time { color: #ffaa00; }
   .log-entry .bot { color: #00ff88; font-weight: bold; }
-  .bot-card { background: rgba(0, 30, 50, 0.7); border: 1px solid #00f0ff; border-radius: 12px; padding: 14px; position: relative; overflow: hidden; transition: all 0.3s; box-shadow: 0 0 12px rgba(0, 240, 255, 0.25); }
-  .bot-card:hover { transform: translateY(-4px); box-shadow: 0 0 25px #00f0ff; }
+  .bot-card { background: rgba(0, 30, 50, 0.75); border: 1px solid #00f0ff; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; justify-content: center; transition: all 0.3s; box-shadow: 0 0 10px rgba(0, 240, 255, 0.2); }
+  .bot-card:hover { transform: translateY(-3px); box-shadow: 0 0 22px #00f0ff; }
   .bot-card.active { border-color: #00ff88; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%, 100% { box-shadow: 0 0 12px #00ff88; } 50% { box-shadow: 0 0 35px #00ff88; } }
-  .bot-name { font-family: 'Orbitron', sans-serif; font-size: 1.1em; margin-bottom: 6px; }
-  .status { font-size: 0.75em; padding: 2px 7px; border-radius: 4px; display: inline-block; }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 0 10px #00ff88; } 50% { box-shadow: 0 0 28px #00ff88; } }
+  .bot-name { font-family: 'Orbitron', sans-serif; font-size: 1.05em; margin-bottom: 4px; }
+  .status { font-size: 0.7em; padding: 2px 6px; border-radius: 3px; display: inline-block; margin-top: 4px; }
   .status.running { background: #00ff88; color: #000; }
   .status.idle { background: #444; color: #aaa; }
-  .xp-bar { height: 7px; background: #111; border-radius: 4px; margin: 8px 0; overflow: hidden; }
+  .xp-bar { height: 6px; background: #111; border-radius: 3px; margin: 6px 0; overflow: hidden; }
   .xp-fill { height: 100%; background: linear-gradient(90deg, #00f0ff, #ff00aa); transition: width 1s; }
-  .level { color: #ffaa00; font-size: 0.8em; }
-  .footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 8px; background: rgba(0,0,0,0.85); font-size: 0.7em; color: #555; }
-  button { background: transparent; border: 1px solid #00f0ff; color: #00f0ff; padding: 8px 16px; margin: 6px; font-family: 'Orbitron', sans-serif; cursor: pointer; transition: all 0.2s; font-size: 0.8em; }
-  button:hover { background: #00f0ff; color: #000; box-shadow: 0 0 15px #00f0ff; }
+  .level { color: #ffaa00; font-size: 0.75em; }
+  .footer { position: fixed; bottom: 0; width: 100%; text-align: center; padding: 6px; background: rgba(0,0,0,0.85); font-size: 0.65em; color: #555; }
+  button { background: transparent; border: 1px solid #00f0ff; color: #00f0ff; padding: 6px 12px; margin: 4px; font-family: 'Orbitron', sans-serif; cursor: pointer; transition: all 0.2s; font-size: 0.75em; }
+  button:hover { background: #00f0ff; color: #000; box-shadow: 0 0 12px #00f0ff; }
 </style>
 </head>
 <body>
@@ -90,7 +90,7 @@ function addLog(botName, action) {
   entry.className = 'log-entry';
   entry.innerHTML = `<span class="time">[${time}]</span> <span class="bot">${botName}</span> → ${action}`;
   logEl.appendChild(entry);
-  if (logEl.children.length > 80) logEl.removeChild(logEl.firstChild);
+  if (logEl.children.length > 100) logEl.removeChild(logEl.firstChild);
   logEl.scrollTop = logEl.scrollHeight;
 }
 
@@ -103,7 +103,7 @@ function render() {
       <div class="status ${b.status}">${b.status.toUpperCase()}</div>
       <div class="level">LEVEL ${b.level}</div>
       <div class="xp-bar"><div class="xp-fill" style="width:${b.xp}%"></div></div>
-      <div style="font-size:0.75em; opacity:0.7;">XP ${b.xp}%</div>
+      <div style="font-size:0.72em; opacity:0.75;">XP ${b.xp}%</div>
     </div>
   `).join('');
 }
@@ -134,7 +134,6 @@ function randomize() {
   render();
 }
 
-// Initial logs
 addLog("System", "AetherDesk online — paper mode active");
 addLog("Pulse Scout", "scanning for new Solana candidates");
 addLog("Forge Filter", "shared status file ready");
