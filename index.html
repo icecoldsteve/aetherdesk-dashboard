@@ -22,13 +22,13 @@
   .log-entry { margin-bottom: 6px; opacity: 0.9; }
   .log-entry .time { color: #ffaa00; }
   .log-entry .bot { color: #00ff88; font-weight: bold; }
-  .bot-card { background: linear-gradient(145deg, rgba(0,40,60,0.8), rgba(0,20,35,0.9)); border: 1px solid #00f0ff; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; transition: all 0.3s; box-shadow: 0 0 8px rgba(0,240,255,0.2), inset 0 0 20px rgba(0,240,255,0.05); transform: scale(0.8); transform-origin: center; }
+  .bot-card { background: linear-gradient(145deg, rgba(0,40,60,0.8), rgba(0,20,35,0.9)); border: 1px solid #00f0ff; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; transition: all 0.3s; box-shadow: 0 0 8px rgba(0,240,255,0.2), inset 0 0 20px rgba(0,240,255,0.05); transform: scale(0.8); transform-origin: center; cursor: pointer; }
   .bot-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(from 0deg, transparent, rgba(0,240,255,0.15), transparent 30%); animation: rotate 12s linear infinite; pointer-events: none; }
   @keyframes rotate { 100% { transform: rotate(360deg); } }
   .bot-card:hover { transform: scale(0.8) translateY(-2px); box-shadow: 0 0 18px #00f0ff, inset 0 0 25px rgba(0,240,255,0.1); }
   .bot-card.active { border-color: #00ff88; animation: pulse 2s infinite; }
   @keyframes pulse { 0%, 100% { box-shadow: 0 0 8px #00ff88, inset 0 0 15px rgba(0,255,136,0.1); } 50% { box-shadow: 0 0 22px #00ff88, inset 0 0 25px rgba(0,255,136,0.2); } }
-  .bot-name { font-family: 'Orbitron', sans-serif; font-size: 0.85em; margin-bottom: 1px; position: relative; z-index: 1; }
+  .bot-name { font-family: 'Orbitron', sans-serif; font-size: 0.95em; margin-bottom: 1px; position: relative; z-index: 1; text-shadow: 0 0 8px #00f0ff; }
   .status { font-size: 0.6em; padding: 1px 4px; border-radius: 3px; display: inline-block; margin-top: 2px; position: relative; z-index: 1; }
   .status.running { background: #00ff88; color: #000; }
   .status.idle { background: #444; color: #aaa; }
@@ -47,7 +47,7 @@
 <header>
   <h1>AETHERDESK</h1>
   <div class="subtitle">MULTI-AGENT COMMAND CENTER // PAPER MODE ACTIVE</div>
-  <button onclick="playBeep()">ACTIVATE SOUND</button>
+  <button onclick="enableAudio()">ACTIVATE SOUND</button>
   <button onclick="randomize()">SIMULATE ACTIVITY</button>
   <button onclick="document.getElementById('log').scrollTop = document.getElementById('log').scrollHeight">SCROLL TO BOTTOM</button>
 </header>
@@ -60,17 +60,40 @@
 </div>
 <div class="footer">REAL-TIME STATUS // GAMIFIED // SCI-FI INTERFACE // NO REAL CAPITAL AT RISK</div>
 <script>
+let audioCtx;
+function enableAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  playBotSound(0);
+}
+
 const bots = [
-  {name: "Pulse Scout", role: "Discovery", status: "running", level: 12, xp: 78},
-  {name: "Forge Filter", role: "Risk Gate", status: "running", level: 15, xp: 45},
-  {name: "Echo Sentinel", role: "News Radar", status: "idle", level: 9, xp: 62},
-  {name: "Thesis Weaver", role: "Analysis", status: "idle", level: 11, xp: 33},
-  {name: "Atlas Chart", role: "Technicals", status: "idle", level: 7, xp: 90},
-  {name: "Aegis Risk", role: "Capital Shield", status: "idle", level: 14, xp: 55},
-  {name: "Gatekeeper", role: "Final Gate", status: "idle", level: 16, xp: 20},
-  {name: "Afterglow", role: "Post-Trade", status: "idle", level: 8, xp: 70},
-  {name: "Vector", role: "Execution", status: "idle", level: 3, xp: 10}
+  {name: "Pulse Scout", role: "Discovery", status: "running", level: 12, xp: 78, freq: 520, type: 'sine', dur: 0.18},
+  {name: "Forge Filter", role: "Risk Gate", status: "running", level: 15, xp: 45, freq: 180, type: 'sawtooth', dur: 0.25},
+  {name: "Echo Sentinel", role: "News Radar", status: "idle", level: 9, xp: 62, freq: 880, type: 'square', dur: 0.12},
+  {name: "Thesis Weaver", role: "Analysis", status: "idle", level: 11, xp: 33, freq: 440, type: 'triangle', dur: 0.3},
+  {name: "Atlas Chart", role: "Technicals", status: "idle", level: 7, xp: 90, freq: 660, type: 'sine', dur: 0.15},
+  {name: "Aegis Risk", role: "Capital Shield", status: "idle", level: 14, xp: 55, freq: 220, type: 'square', dur: 0.22},
+  {name: "Gatekeeper", role: "Final Gate", status: "idle", level: 16, xp: 20, freq: 330, type: 'sawtooth', dur: 0.28},
+  {name: "Afterglow", role: "Post-Trade", status: "idle", level: 8, xp: 70, freq: 740, type: 'triangle', dur: 0.2},
+  {name: "Vector", role: "Execution", status: "idle", level: 3, xp: 10, freq: 980, type: 'square', dur: 0.1}
 ];
+
+function playBotSound(index) {
+  if (!audioCtx) return;
+  const b = bots[index];
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.type = b.type;
+  osc.frequency.setValueAtTime(b.freq, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(b.freq * 0.4, audioCtx.currentTime + b.dur);
+  gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + b.dur);
+  osc.start();
+  osc.stop(audioCtx.currentTime + b.dur);
+}
 
 const logEl = document.getElementById('log');
 const actions = [
@@ -102,8 +125,8 @@ function addLog(botName, action) {
 
 function render() {
   const grid = document.getElementById('grid');
-  grid.innerHTML = bots.map(b => `
-    <div class="bot-card ${b.status === 'running' ? 'active' : ''}">
+  grid.innerHTML = bots.map((b, i) => `
+    <div class="bot-card ${b.status === 'running' ? 'active' : ''}" onclick="playBotSound(${i})">
       <div class="bot-name">${b.name}</div>
       <div style="font-size:0.7em; opacity:0.85;">${b.role}</div>
       <div class="status ${b.status}">${b.status.toUpperCase()}</div>
@@ -114,28 +137,16 @@ function render() {
   `).join('');
 }
 
-function playBeep() {
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.connect(gain); gain.connect(ctx.destination);
-  osc.type = 'square';
-  osc.frequency.setValueAtTime(800, ctx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.3);
-  gain.gain.setValueAtTime(0.1, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-  osc.start(); osc.stop(ctx.currentTime + 0.3);
-}
-
 function randomize() {
-  bots.forEach(b => {
+  bots.forEach((b, i) => {
     if (Math.random() > 0.65) {
       b.status = b.status === 'running' ? 'idle' : 'running';
       const action = actions[Math.floor(Math.random() * actions.length)];
       addLog(b.name, action);
+      playBotSound(i);
     }
     b.xp = Math.min(100, b.xp + Math.floor(Math.random() * 12));
-    if (b.xp >= 100) { b.level++; b.xp = 0; playBeep(); }
+    if (b.xp >= 100) { b.level++; b.xp = 0; }
   });
   render();
 }
